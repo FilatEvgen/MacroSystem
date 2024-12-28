@@ -6,5 +6,6 @@ object Macros: IntIdTable() {
     val startStopKey = integer("startStopKey")
     val loopType = varchar("loopType", 50)
     val keys = text("keys")
+    val userId = integer("userId")
 
 }
