@@ -17,4 +17,13 @@ fun initDatabase(config: Config) {
         SchemaUtils.create(Macros) // Создание таблицы
     }
 }
-
+fun connectToTestDatabase() {
+    Database.connect(
+        url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
+        driver = "org.h2.Driver",
+        user = "sa",
+        password = "")
+    transaction {
+        SchemaUtils.create(Macros)
+    }
+}

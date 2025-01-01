@@ -1,0 +1,33 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Deploy to Server
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          echo "Deploying to server..."
+          sshpass -p $SERVER_PASSWORD ssh $SERVER_USER@$SERVER_IP "mkdir -p ~/myapp && rm -rf ~/myapp/*"
+          scp -r build/libs/* $SERVER_USER@$SERVER_IP:~/myapp/
+          ssh $SERVER_USER@$SERVER_IP "cd ~/myapp && java -jar macros_system.jar"

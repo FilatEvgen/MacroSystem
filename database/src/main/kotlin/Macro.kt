@@ -2,6 +2,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Macro(
+    val userId: Int,
     val description: String,
     val comment: String,
     val startStopKey: Int,

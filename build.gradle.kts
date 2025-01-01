@@ -10,3 +10,8 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
 }
+
+tasks.jar {
+    archiveBaseName.set("macros_system")
+    archiveVersion.set(version.toString())
+}

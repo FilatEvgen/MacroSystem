@@ -16,7 +16,8 @@ fun insertMacros(macros: List<Macro>) {
                 it[comment] = macro.comment
                 it[startStopKey] = macro.startStopKey
                 it[loopType] = macro.loopType.name
-                it[keys] = Json.encodeToString(macro.keys) // Сериализация списка в JSON
+                it[keys] = Json.encodeToString(macro.keys) // Сериализация списка в JSON]
+                it[userId] = macro.userId
             }
         }
     }
@@ -31,7 +32,8 @@ fun getAllMacrosForUser (userId: Int): List<Macro> {
                 comment = it[Macros.comment],
                 startStopKey = it[Macros.startStopKey],
                 loopType = LoopType.valueOf(it[Macros.loopType]),
-                keys = Json.decodeFromString<List<EventConfig>>(it[Macros.keys]) // Десериализация из JSON
+                keys = Json.decodeFromString<List<EventConfig>>(it[Macros.keys]), // Десериализация из JSON
+                userId = it[Macros.userId]
             )
         }
     }
@@ -46,6 +48,7 @@ fun updateMacro(id: Int, updatedMacro: Macro) {
             it[startStopKey] = updatedMacro.startStopKey
             it[loopType] = updatedMacro.loopType.name
             it[keys] = Json.encodeToString(updatedMacro.keys) // Сериализация списка в JSON
+            it[userId] = updatedMacro.userId
         }
     }
 }
@@ -60,7 +63,8 @@ fun getMacroById(id: Int): Macro? {
                     comment = it[Macros.comment],
                     startStopKey = it[Macros.startStopKey],
                     loopType = LoopType.valueOf(it[Macros.loopType]),
-                    keys = Json.decodeFromString<List<EventConfig>>(it[Macros.keys]) // Десериализация из JSON
+                    keys = Json.decodeFromString<List<EventConfig>>(it[Macros.keys]), // Десериализация из JSON
+                    userId = it[Macros.userId]
                 )
             }.singleOrNull() // Возвращает единственный элемент или null
     }
