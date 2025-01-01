@@ -1,10 +1,9 @@
-
 plugins {
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.kotlin.jvm)
-//    id("com.github.johnrengelman.shadow") version "9.0.0-beta4" // Используйте стабильную версию
-//    id("java")
+    id ("com.gradleup.shadow") version "9.0.0-beta4"
+    id ("java")
 }
 
 group = "org.example"
@@ -19,9 +18,8 @@ tasks.jar {
     archiveVersion.set(version.toString())
 }
 
-//// Настройка задачи shadowJar
-//tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-//    manifest {
-//        attributes["Main-Class"] = "server.ApplicationKt" // Укажите правильный путь к вашему классу
-//    }
-//}
+tasks.shadowJar {
+    manifest {
+        attributes("Main-Class" to "server.Application") // Укажите ваш основной класс
+    }
+}
