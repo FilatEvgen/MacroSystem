@@ -30,6 +30,7 @@ tasks.jar {
 
 tasks.shadowJar {
     manifest {
-        attributes("Main-Class" to "ApplicationKt") // Укажите ваш основной класс
+        attributes["Main-Class"] = "ApplicationKt" // Укажите ваш основной класс
     }
+
 }
