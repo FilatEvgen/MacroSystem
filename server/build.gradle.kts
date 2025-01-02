@@ -9,6 +9,7 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     implementation(libs.io.ktor.server.core)
     implementation(libs.io.ktor.server.netty)
@@ -28,9 +29,10 @@ tasks.jar {
     archiveVersion.set(version.toString())
 }
 
-tasks.shadowJar {
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "ApplicationKt" // Укажите ваш основной класс
+        attributes(
+            "Main-Class" to "ApplicationKt" // Используйте свойство mainClass
+        )
     }
-
 }
