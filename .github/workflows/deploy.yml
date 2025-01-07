@@ -57,4 +57,5 @@ jobs:
           sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "ls ~/myapp || echo 'Failed to list files in ~/myapp'"
   
            # Запуск приложения
-          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "cd ~/myapp && java -jar macros_system.jar || echo 'Failed to run the jar file'"
+          # Запуск приложения
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "cd ~/myapp && java -jar MacroSystem-all.jar || echo 'Failed to run the jar file'"
