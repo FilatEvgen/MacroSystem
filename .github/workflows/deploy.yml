@@ -44,6 +44,8 @@ jobs:
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
           echo "Deploying to server..."
+          echo "SERVER_IP: $SERVER_IP"
+          echo "SERVER_USER: $SERVER_USER"
           sshpass -p "$SERVER_PASSWORD" ssh "$SERVER_USER@$SERVER_IP" "mkdir -p ~/myapp && rm -rf ~/myapp/*"
           sshpass -p "$SERVER_PASSWORD" scp -r build/libs/* "$SERVER_USER@$SERVER_IP:~/myapp/"
           sshpass -p "$SERVER_PASSWORD" ssh "$SERVER_USER@$SERVER_IP" "cd ~/myapp && java -jar macros_system.jar"
