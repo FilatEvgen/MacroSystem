@@ -20,10 +20,16 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v2
+        uses: gradle/gradle-build-action@v2
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Check Gradle version
+        run: ./gradlew --version
+
+      - name: List build/libs
+        run: ls build/libs
 
       - name: Deploy to Server
         env:
