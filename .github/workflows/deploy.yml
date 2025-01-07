@@ -34,6 +34,9 @@ jobs:
       - name: List build/libs
         run: ls build/libs
 
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
       - name: Deploy to Server
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
@@ -41,6 +44,6 @@ jobs:
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
           echo "Deploying to server..."
-          sshpass -p $SERVER_PASSWORD ssh $SERVER_USER@$SERVER_IP "mkdir -p ~/myapp && rm -rf ~/myapp/*"
-          scp -r build/libs/* $SERVER_USER@$SERVER_IP:~/myapp/
-          ssh $SERVER_USER@$SERVER_IP "cd ~/myapp && java -jar macros_system.jar"
+          sshpass -p "$SERVER_PASSWORD" ssh "$SERVER_USER@$SERVER_IP" "mkdir -p ~/myapp && rm -rf ~/myapp/*"
+          sshpass -p "$SERVER_PASSWORD" scp -r build/libs/* "$SERVER_USER@$SERVER_IP:~/myapp/"
+          sshpass -p "$SERVER_PASSWORD" ssh "$SERVER_USER@$SERVER_IP" "cd ~/myapp && java -jar macros_system.jar"
