@@ -1,14 +1,15 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlinx.serialization)
-    id ("com.gradleup.shadow")
-    id ("java")
+    application
+}
+application {
+    mainClass = "MainKt"
 }
 
 repositories {
     mavenCentral()
 }
-
 
 dependencies {
     implementation(libs.io.ktor.server.core)
@@ -18,21 +19,11 @@ dependencies {
     implementation(libs.exposed.core)
 
     implementation(project(":database"))
-//    Test implementation
+    // Test implementation
     testImplementation("io.ktor:ktor-server-test-host:3.0.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:2.0.21")
     testImplementation("io.ktor:ktor-client-mock:3.0.2")
     testImplementation("com.h2database:h2:2.3.232")
 }
-tasks.jar {
-    archiveBaseName.set("macro_system")
-    archiveVersion.set(version.toString())
-}
 
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    manifest {
-        attributes(
-            "Main-Class" to "ApplicationKt" // Используйте свойство mainClass
-        )
-    }
-}
+

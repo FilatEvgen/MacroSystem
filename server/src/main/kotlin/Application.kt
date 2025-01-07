@@ -19,12 +19,14 @@ fun Application.module() {
     val config: Config = try {
         loadConfig("config.json")
     } catch (e: FileNotFoundException) {
-        Config(DatabaseConfig(
-            url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
-            driver = "org.h2.Driver",
-            user = "sa",
-            password = ""
-        ))
+        Config(
+            DatabaseConfig(
+                url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
+                driver = "org.h2.Driver",
+                user = "sa",
+                password = ""
+            )
+        )
     }
     initDatabase(config)
 
@@ -33,6 +35,6 @@ fun Application.module() {
     }
 }
 
-fun main() {
+fun startServer() {
     embeddedServer(Netty, port = 8080, module = Application::module).start(wait = true)
 }
