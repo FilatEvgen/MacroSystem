@@ -48,13 +48,13 @@ jobs:
           echo "SERVER_USER: $SERVER_USER"
           
           # Создание директории и очистка
-          sshpass -p "$SERVER_PASSWORD" ssh "$SERVER_USER@$SERVER_IP" "mkdir -p ~/myapp && rm -rf ~/myapp/*" || echo "Failed to create or clear directory on server"
-
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "mkdir -p ~/myapp && rm -rf ~/myapp/*" || echo "Failed to create or clear directory on server"
+  
           # Копирование файлов
-          sshpass -p "$SERVER_PASSWORD" scp -r build/libs/* "$SERVER_USER@$SERVER_IP:~/myapp/" || echo "Failed to copy files to server"
-
+          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r build/libs/* "$SERVER_USER@$SERVER_IP:~/myapp/" || echo "Failed to copy files to server"
+  
           # Проверка наличия файла
-          sshpass -p "$SERVER_PASSWORD" ssh "$SERVER_USER@$SERVER_IP" "ls ~/myapp || echo 'Failed to list files in ~/myapp'" 
-
-          # Запуск приложения
-          sshpass -p "$SERVER_PASSWORD" ssh "$SERVER_USER@$SERVER_IP" "cd ~/myapp && java -jar macros_system.jar || echo 'Failed to run the jar file'"
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "ls ~/myapp || echo 'Failed to list files in ~/myapp'"
+  
+           # Запуск приложения
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "cd ~/myapp && java -jar macros_system.jar || echo 'Failed to run the jar file'"
