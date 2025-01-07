@@ -4,9 +4,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
-import kotlinx.io.files.FileNotFoundException
 import org.example.Config
-import org.example.DatabaseConfig
 import org.example.initDatabase
 import org.example.loadConfig
 
@@ -16,18 +14,17 @@ fun Application.module() {
     }
 
     // Инициализация базы данных
-    val config: Config = try {
-        loadConfig("config.json")
-    } catch (e: FileNotFoundException) {
-        Config(
-            DatabaseConfig(
-                url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
-                driver = "org.h2.Driver",
-                user = "sa",
-                password = ""
-            )
-        )
-    }
+    val config: Config = loadConfig("config.json")
+//    } catch (e: FileNotFoundException) {
+//        Config(
+//            DatabaseConfig(
+//                url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
+//                driver = "org.h2.Driver",
+//                user = "sa",
+//                password = ""
+//            )
+//        )
+//    }
     initDatabase(config)
 
     routing {
