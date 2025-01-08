@@ -14,7 +14,7 @@ fun Application.module() {
     }
 
     // Инициализация базы данных
-    val config: Config = loadConfig("config.json")
+    val config: Config = loadConfig(".env")
 //    } catch (e: FileNotFoundException) {
 //        Config(
 //            DatabaseConfig(

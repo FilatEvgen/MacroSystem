@@ -5,5 +5,5 @@ import java.io.File
 
 fun loadConfig(filePath: String): Config {
     val jsonString = File(filePath).readText()
-    return Json.decodeFromString(jsonString)
+    return Json.decodeFromString<Config>(jsonString)
 }
