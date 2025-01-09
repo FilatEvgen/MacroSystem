@@ -47,14 +47,17 @@ jobs:
           echo "SERVER_IP: $SERVER_IP"
           echo "SERVER_USER: $SERVER_USER"
 
-          # Создание директории и очистка
-          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "mkdir -p ~/myapp && rm -rf ~/myapp/*" || echo "Failed to create or clear directory on server"
-            
-            # Копирование файлов
+          # Копирование файлов
           sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r build/libs/* "$SERVER_USER@$SERVER_IP:~/myapp/" || echo "Failed to copy files to server"
-            
-            # Проверка наличия файла
+          
+          # Проверка наличия файла
           sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "ls ~/myapp || echo 'Failed to list files in ~/myapp'"
-            
-            # Запуск приложения с логированием
-          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "cd ~/myapp && [ -f MacroSystem-all.jar ] && java -jar MacroSystem-all.jar > app.log 2>&1 || echo 'JAR file not found or failed to run'"
+
+          # Обновление файла сервиса (если необходимо)
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "sudo systemctl restart myapp"
+
+          # Перезагрузка конфигурации systemd (если вы изменили файл сервиса)
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "sudo systemctl daemon-reload"
+
+          # Запуск и активация сервиса (если он не был запущен)
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "sudo systemctl start myapp && sudo systemctl enable myapp"
