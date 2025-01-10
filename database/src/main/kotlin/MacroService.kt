@@ -61,8 +61,6 @@ fun getAllMacrosForUser (userId: Int): List<Macro> {
     }
 }
 
-
-
 // Обновление макроса
 fun updateMacro(id: Int, updatedMacro: Macro) {
     transaction {
