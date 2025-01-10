@@ -26,15 +26,37 @@ fun insertMacros(macros: List<Macro>) {
 // Получение всех макросов
 fun getAllMacrosForUser (userId: Int): List<Macro> {
     return transaction {
-        Macros.select(Macros.userId eq userId).map {
-            Macro(
-                description = it[Macros.description],
-                comment = it[Macros.comment],
-                startStopKey = it[Macros.startStopKey],
-                loopType = LoopType.valueOf(it[Macros.loopType]),
-                keys = Json.decodeFromString<List<EventConfig>>(it[Macros.keys]), // Десериализация из JSON
-                userId = it[Macros.userId]
-            )
+        try {
+            // Выполняем выборку макросов для указанного пользователя с использованием where
+            val macros = Macros.selectAll().where { Macros.userId eq userId }.toList()
+
+            // Логируем полученные макросы
+            println("Полученные макросы: $macros")
+
+            // Проверяем, есть ли макросы
+            if (macros.isEmpty()) {
+                println("Нет макросов для пользователя $userId")
+                return@transaction emptyList()
+            }
+
+            // Преобразуем записи в объекты Macro
+            val result = macros.map { row ->
+                println("Запись: $row") // Логируем каждую запись
+                Macro(
+                    description = row[Macros.description],
+                    comment = row[Macros.comment],
+                    startStopKey = row[Macros.startStopKey],
+                    loopType = LoopType.valueOf(row[Macros.loopType]),
+                    keys = Json.decodeFromString<List<EventConfig>>(row[Macros.keys]),
+                    userId = row[Macros.userId]
+                )
+            }
+
+            return@transaction result // Возвращаем список макросов
+        } catch (e: Exception) {
+            println("Ошибка при получении макросов для пользователя $userId: ${e.message}")
+            e.printStackTrace() // Выводим стек вызовов
+            throw e // Пробрасываем исключение дальше
         }
     }
 }
