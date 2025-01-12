@@ -17,9 +17,25 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '21'
+          distribution: 'temurin'
+
+      - name: Check Java version
+        run: java -version
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --stacktrace --info
+
+      - name: Check Gradle version
+        run: ./gradlew --version
+
+      - name: List build/libs
+        run: ls build/libs
+
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
 
       - name: Deploy to Server
         env:
@@ -28,6 +44,20 @@ jobs:
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
           echo "Deploying to server..."
-          sshpass -p $SERVER_PASSWORD ssh $SERVER_USER@$SERVER_IP "mkdir -p ~/myapp && rm -rf ~/myapp/*"
-          scp -r build/libs/* $SERVER_USER@$SERVER_IP:~/myapp/
-          ssh $SERVER_USER@$SERVER_IP "cd ~/myapp && java -jar macros_system.jar"
+          echo "SERVER_IP: $SERVER_IP"
+          echo "SERVER_USER: $SERVER_USER"
+
+          # Копирование файлов
+          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r build/libs/* "$SERVER_USER@$SERVER_IP:~/myapp/" || echo "Failed to copy files to server"
+          
+          # Проверка наличия файла
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "ls ~/myapp || echo 'Failed to list files in ~/myapp'"
+
+          # Обновление файла сервиса (если необходимо)
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "sudo systemctl restart myapp"
+
+          # Перезагрузка конфигурации systemd (если вы изменили файл сервиса)
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "sudo systemctl daemon-reload"
+
+          # Запуск и активация сервиса (если он не был запущен)
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "sudo systemctl start myapp && sudo systemctl enable myapp"
