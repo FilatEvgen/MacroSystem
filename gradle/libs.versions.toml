@@ -8,10 +8,18 @@ postgresql = "42.7.4"
 [libraries]
 
 #ktor-server
-
+io-ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 io-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 io-ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 io-ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+io-ktor-server-sessions = { module = "io.ktor:ktor-server-sessions", version.ref = "ktor" }
+# Ktor Client
+
+io-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+io-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+io-ktor-client-json = { module = "io.ktor:ktor-client-json", version.ref = "ktor" }
+io-ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
+io-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 
 #ktor-common
 
