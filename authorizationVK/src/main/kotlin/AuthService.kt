@@ -7,6 +7,8 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.*
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -40,7 +42,7 @@ object AuthService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(hash)
     }
 
-    suspend fun exchangeCodeForTokens(code: String?, codeVerifier: String): TokenResponse {
+    suspend fun exchangeCodeForTokens(code: String?, codeVerifier: String, deviceId: String, state: String): TokenResponse {
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
                 json()
@@ -48,13 +50,15 @@ object AuthService {
         }
 
         // Отправляем POST-запрос на обмен кода на токены
-        val response: TokenResponse = client.post("https://id.vk.com/oauth2/access_token") {
-            parameter("client_id", config.CLIENT_ID)
-            parameter("client_secret", config.CLIENT_SECRET)
+        val response: TokenResponse = client.post("https://id.vk.com/oauth2/auth") {
+            contentType(ContentType.Application.FormUrlEncoded)
             parameter("grant_type", "authorization_code")
-            parameter("code", code)
-            parameter("redirect_uri", config.REDIRECT_URI)
             parameter("code_verifier", codeVerifier)
+            parameter("redirect_uri", config.REDIRECT_URI)
+            parameter("code", code)
+            parameter("client_id", config.CLIENT_ID)
+            parameter("device_id", deviceId)
+            parameter("state", state)
         }.body()
 
         client.close()
