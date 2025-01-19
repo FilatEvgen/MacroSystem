@@ -52,8 +52,11 @@ fun Application.frontModule(htmlBaseDir: File) {
             println("Auth URL: $authUrl")
 
             while (true) {
-                delay(1000)
+
                 println("Checking parameters for state: $state")
+
+                // Отправка сообщения "Await..." клиенту
+                send(Frame.Text("Await..."))
 
                 val parameters = parameterCache[state]
                 if (parameters != null) {
@@ -70,9 +73,11 @@ fun Application.frontModule(htmlBaseDir: File) {
                         break
                     } else {
                         println("Code or Device ID is null for state: $state")
+                        send(Frame.Text("Code or Device ID is null for state: $state"))
                     }
                 } else {
-                    println("No parameters found for state: $state")
+                    println("No parameters found for state: $state") // Отладочное сообщение
+                    send(Frame.Text("No parameters found for state: $state"))
                 }
             }
         }
