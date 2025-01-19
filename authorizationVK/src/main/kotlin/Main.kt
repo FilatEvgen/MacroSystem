@@ -1,4 +1,3 @@
-import AuthEvent.StartAuthEvent
 import configFiles.Config
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -11,9 +10,8 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.example.AuthService
 import org.example.CodeVerifierSession
 import java.io.File
@@ -46,31 +44,35 @@ fun Application.frontModule(htmlBaseDir: File) {
         authRoutes()
 
         webSocket("/ws") {
-            // Отправка ссылки на авторизацию при подключении
             val (codeVerifier, codeChallenge, state) = AuthService.generatePKCE()
             call.sessions.set(CodeVerifierSession(codeVerifier))
-            val authUrl =
-                "https://id.vk.com/authorize?client_id=${Config.appConfig.CLIENT_ID}&redirect_uri=${Config.appConfig.REDIRECT_URI}&response_type=code&scope=email&code_challenge=$codeChallenge&code_challenge_method=S256&state=$state"
 
-            // Отправляем событие StartAuthEvent
-            send(Frame.Text(Json.encodeToString(StartAuthEvent(authUrl))))
+            val authUrl = "https://id.vk.com/authorize?client_id=${Config.appConfig.CLIENT_ID}&redirect_uri=${Config.appConfig.REDIRECT_URI}&response_type=code&scope=email&code_challenge=$codeChallenge&code_challenge_method=S256&state=$state"
 
-            // Ожидание сообщений от клиента
-            for (frame in incoming) {
-                if (frame is Frame.Text) {
-                    val message = frame.readText()
-                    val parameters = parameterCache[state] ?: continue
+            println("Auth URL: $authUrl")
 
-                    // Извлекаем код из сообщения
-                    val code = message
-                    val deviceId = "test_device"
+            while (true) {
+                delay(1000)
+                println("Checking parameters for state: $state")
 
-                    // Вызов функции обработки авторизации
-                    handleAuthorization(code, deviceId, state, codeVerifier) { response ->
-                        launch {
-                            send(Frame.Text(response))
+                val parameters = parameterCache[state]
+                if (parameters != null) {
+                    val code = parameters["code"]
+                    val deviceId = parameters["device_id"]
+
+                    if (code != null && deviceId != null) {
+                        handleAuthorization(code, deviceId, state, codeVerifier) { response ->
+                            launch {
+                                send(Frame.Text(response))
+                            }
                         }
+
+                        break
+                    } else {
+                        println("Code or Device ID is null for state: $state")
                     }
+                } else {
+                    println("No parameters found for state: $state")
                 }
             }
         }
