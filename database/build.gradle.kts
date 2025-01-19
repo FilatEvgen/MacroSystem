@@ -14,4 +14,6 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.postgresql)
     implementation(libs.io.ktor.serialization.kotlinx.json)
+    implementation(project(":common"))
+
 }

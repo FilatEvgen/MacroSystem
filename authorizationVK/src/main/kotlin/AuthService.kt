@@ -1,5 +1,6 @@
 package org.example
 
+import UserInfoResponse
 import configFiles.AppConfig
 import configFiles.Config
 import io.ktor.client.*
@@ -42,7 +43,12 @@ object AuthService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(hash)
     }
 
-    suspend fun exchangeCodeForTokens(code: String?, codeVerifier: String, deviceId: String, state: String): TokenResponse {
+    suspend fun exchangeCodeForTokens(
+        code: String?,
+        codeVerifier: String,
+        deviceId: String,
+        state: String
+    ): TokenResponse {
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
                 json()
@@ -59,6 +65,24 @@ object AuthService {
             parameter("client_id", config.CLIENT_ID)
             parameter("device_id", deviceId)
             parameter("state", state)
+        }.body()
+
+        client.close()
+        return response
+    }
+
+    suspend fun getUserInfo(accessToken: String): UserInfoResponse {
+        val client = HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        // Отправляем POST-запрос для получения информации о пользователе
+        val response: UserInfoResponse = client.post("https://id.vk.com/oauth2/user_info") {
+            contentType(ContentType.Application.FormUrlEncoded)
+            parameter("client_id", Config.appConfig.CLIENT_ID)
+            parameter("access_token", accessToken)
         }.body()
 
         client.close()

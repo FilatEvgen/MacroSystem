@@ -1,3 +1,5 @@
+import AuthEvent.StartAuthEvent
+import configFiles.Config
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -7,9 +9,12 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
-import io.ktor.server.websocket.WebSockets
-import io.ktor.server.websocket.webSocket
+import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.example.AuthService
 import org.example.CodeVerifierSession
 import java.io.File
 
@@ -41,10 +46,31 @@ fun Application.frontModule(htmlBaseDir: File) {
         authRoutes()
 
         webSocket("/ws") {
+            // Отправка ссылки на авторизацию при подключении
+            val (codeVerifier, codeChallenge, state) = AuthService.generatePKCE()
+            call.sessions.set(CodeVerifierSession(codeVerifier))
+            val authUrl =
+                "https://id.vk.com/authorize?client_id=${Config.appConfig.CLIENT_ID}&redirect_uri=${Config.appConfig.REDIRECT_URI}&response_type=code&scope=email&code_challenge=$codeChallenge&code_challenge_method=S256&state=$state"
+
+            // Отправляем событие StartAuthEvent
+            send(Frame.Text(Json.encodeToString(StartAuthEvent(authUrl))))
+
+            // Ожидание сообщений от клиента
             for (frame in incoming) {
                 if (frame is Frame.Text) {
                     val message = frame.readText()
-                    send("Received: $message")
+                    val parameters = parameterCache[state] ?: continue
+
+                    // Извлекаем код из сообщения
+                    val code = message
+                    val deviceId = "test_device"
+
+                    // Вызов функции обработки авторизации
+                    handleAuthorization(code, deviceId, state, codeVerifier) { response ->
+                        launch {
+                            send(Frame.Text(response))
+                        }
+                    }
                 }
             }
         }
