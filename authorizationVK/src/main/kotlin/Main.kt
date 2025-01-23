@@ -15,10 +15,6 @@ import kotlinx.coroutines.launch
 import org.example.AuthService
 import java.io.File
 
-// Глобальные переменные для хранения данных
-var globalCodeVerifier: String? = null
-var globalState: String? = null
-
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
@@ -32,6 +28,10 @@ fun Application.module() {
 
     val htmlBaseDir = System.getenv("HTML_BASE_DIR") ?: "static"
     frontModule(File(htmlBaseDir))
+
+    routing {
+        authRoutes()
+    }
 }
 
 fun Application.frontModule(htmlBaseDir: File) {
@@ -46,40 +46,34 @@ fun Application.frontModule(htmlBaseDir: File) {
             try {
                 // Генерируем PKCE
                 val (codeVerifier, codeChallenge, state) = AuthService.generatePKCE()
-                globalCodeVerifier = codeVerifier
-                globalState = state
                 println("Generated codeVerifier: $codeVerifier")
-                println("Generated state: $state") // Логируем сгенерированный state
+                println("Generated state: $state")
 
                 // Генерируем URL авторизации
                 val authUrl = "https://id.vk.com/authorize?client_id=${Config.appConfig.CLIENT_ID}&redirect_uri=${Config.appConfig.REDIRECT_URI}&response_type=code&scope=email&code_challenge=$codeChallenge&code_challenge_method=S256&state=$state"
                 println("Auth URL: $authUrl")
-                send(Frame.Text(authUrl)) // Отправляем ссылку на авторизацию клиенту
+                send(Frame.Text(authUrl))
 
                 // Цикл ожидания параметров
                 while (isActive) {
                     delay(4000) // Задержка перед проверкой кэша
                     println("Checking cache for state: $state")
-                    val parameters = parameterCache[state]
-                    if (parameters != null) {
-                        val code = parameters["code"]
-                        val deviceId = parameters["device_id"]
+                    val cachedData = Cache.get(state)
+                    if (cachedData != null) {
+                        val code = cachedData.code
+                        val deviceId = cachedData.deviceId
 
-                        if (code != null && deviceId != null) {
-                            // Обработка авторизации
-                            handleAuthorization(code, deviceId, state, codeVerifier) { response ->
-                                if (this.isActive) {
-                                    launch {
-                                        println("Sending response: $response")
-                                        send(Frame.Text(response))
-                                    }
+                        // Обработка авторизации
+                        handleAuthorization(code, deviceId, state, codeVerifier) { response ->
+                            if (this.isActive) {
+                                launch {
+                                    println("Sending response: $response")
+                                    send(Frame.Text(response))
                                 }
                             }
-                            parameterCache.remove(state) // Удаляем параметры из кэша после обработки
-                            break
-                        } else {
-                            println("Code or Device ID is null for state: $state")
                         }
+                        Cache.remove(state)
+                        break
                     } else {
                         println("No parameters found for state: $state")
                     }

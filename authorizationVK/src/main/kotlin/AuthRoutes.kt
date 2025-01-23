@@ -2,9 +2,7 @@ import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-// Кэш для хранения параметров
-val parameterCache = mutableMapOf<String, Map<String, String>>()
-
+// Обработчик маршрутов авторизации
 fun Route.authRoutes() {
     post("/auth/callback") {
         // Извлекаем параметры из запроса
@@ -16,9 +14,8 @@ fun Route.authRoutes() {
         println("Received parameters: code=$code, device_id=$deviceId, state=$state")
 
         // Сохраняем параметры в кэш
-        val parameters = mapOf("code" to code, "device_id" to deviceId, "state" to state)
-        parameterCache[state] = parameters
-        println("Saved parameters: $parameters")
+        Cache.put(state, code, deviceId)
+        println("Saved parameters: code=$code, deviceId=$deviceId for state=$state")
 
         // Возвращаем 200 OK
         call.respond(HttpStatusCode.OK)

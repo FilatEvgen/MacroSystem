@@ -11,6 +11,7 @@ import io.ktor.client.request.*
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.*
@@ -51,24 +52,30 @@ object AuthService {
     ): TokenResponse {
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
-                json()
+                json(Json { ignoreUnknownKeys = true })
             }
         }
 
-        // Отправляем POST-запрос на обмен кода на токены
-        val response: TokenResponse = client.post("https://id.vk.com/oauth2/auth") {
-            contentType(ContentType.Application.FormUrlEncoded)
-            parameter("grant_type", "authorization_code")
-            parameter("code_verifier", codeVerifier)
-            parameter("redirect_uri", config.REDIRECT_URI)
-            parameter("code", code)
-            parameter("client_id", config.CLIENT_ID)
-            parameter("device_id", deviceId)
-            parameter("state", state)
-        }.body()
+        try {
+            // Отправляем POST-запрос на обмен кода на токены
+            val response: TokenResponse = client.post("https://id.vk.com/oauth2/auth") {
+                contentType(ContentType.Application.FormUrlEncoded)
+                parameter("grant_type", "authorization_code")
+                parameter("code_verifier", codeVerifier) // Передаем codeVerifier
+                parameter("redirect_uri", config.REDIRECT_URI) // Убедитесь, что это правильный URI
+                parameter("code", code)
+                parameter("client_id", config.CLIENT_ID)
+                parameter("device_id", deviceId)
+                parameter("state", state) // Добавляем state, если это необходимо
+            }.body()
 
-        client.close()
-        return response
+            client.close()
+            return response
+        } catch (e: Exception) {
+            // Обработка ошибок
+            println("Error during token exchange: ${e.message}")
+            throw e
+        }
     }
 
     suspend fun getUserInfo(accessToken: String): UserInfoResponse {

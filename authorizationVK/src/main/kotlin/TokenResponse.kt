@@ -9,5 +9,7 @@ data class TokenResponse(
     @SerialName("refresh_token") val refreshToken: String,
     @SerialName("id_token") val idToken: String,
     @SerialName("expires_in") val expiresIn: Int,
-    @SerialName("user_id") val userId: Int
+    @SerialName("user_id") val userId: Int,
+    @SerialName("token_type") val tokenType: String? = null,
+    @SerialName("scope") val scope: String? = null
 )
