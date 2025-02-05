@@ -1,15 +1,17 @@
 package org.example
 
+import ErrorResponse
 import UserInfoResponse
 import configFiles.AppConfig
 import configFiles.Config
 import io.ktor.client.*
-import io.ktor.client.call.body
+import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import java.security.MessageDigest
@@ -57,22 +59,28 @@ object AuthService {
         }
 
         try {
-            // Отправляем POST-запрос на обмен кода на токены
-            val response: TokenResponse = client.post("https://id.vk.com/oauth2/auth") {
+            val response: HttpResponse = client.post("https://id.vk.com/oauth2/auth-") {
                 contentType(ContentType.Application.FormUrlEncoded)
                 parameter("grant_type", "authorization_code")
-                parameter("code_verifier", codeVerifier) // Передаем codeVerifier
-                parameter("redirect_uri", config.REDIRECT_URI) // Убедитесь, что это правильный URI
                 parameter("code", code)
+                parameter("code_verifier", codeVerifier)
+                parameter("redirect_uri", config.REDIRECT_URI)
                 parameter("client_id", config.CLIENT_ID)
                 parameter("device_id", deviceId)
-                parameter("state", state) // Добавляем state, если это необходимо
-            }.body()
+                parameter("state", state)
+            }
 
-            client.close()
-            return response
+            val responseBody = response.bodyAsText()
+            println("Response body: $responseBody")
+
+            // Десериализация ответа
+            val tokenResponse: TokenResponse = Json.decodeFromString(responseBody)
+            return tokenResponse
+        } catch (e: ClientRequestException) {
+            val errorBody = e.response.bodyAsText()
+            println("Error during token exchange: $errorBody")
+            throw e
         } catch (e: Exception) {
-            // Обработка ошибок
             println("Error during token exchange: ${e.message}")
             throw e
         }
