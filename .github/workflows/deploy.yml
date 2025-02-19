@@ -48,7 +48,7 @@ jobs:
           echo "SERVER_USER: $SERVER_USER"
 
           # Копирование файлов
-          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r build/libs/* "$SERVER_USER@$SERVER_IP:~/myapp/" || echo "Failed to copy files to server"
+          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -r server/build/libs/* "$SERVER_USER@$SERVER_IP:~/myapp/" || echo "Failed to copy files to server"
           
           # Проверка наличия файла
           sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "ls ~/myapp || echo 'Failed to list files in ~/myapp'"
