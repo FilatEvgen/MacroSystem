@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew --version
 
       - name: List build/libs
-        run: ls build/libs
+        run: ls server/build/libs
 
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
