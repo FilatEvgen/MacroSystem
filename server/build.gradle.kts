@@ -1,11 +1,12 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.shadow)
     application
 }
 
 application {
-    mainClass = "ApplicationKt"
+    mainClass = "ru.dragon_slayer.server.ApplicationKt"
 }
 
 repositories {
@@ -24,6 +25,14 @@ dependencies {
 
     implementation(project(":database"))
     implementation(project(":authorizationVK"))
+}
+
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    manifest {
+        attributes(
+            "Main-Class" to "ru.dragon_slayer.server.ApplicationKt"
+        )
+    }
 }
 
 task("startServer", type = JavaExec::class) {

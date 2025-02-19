@@ -6,6 +6,8 @@ import handleAuthorization
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import models.Intent
 import org.example.AuthService
 import kotlin.time.Duration.Companion.minutes
@@ -41,7 +43,7 @@ suspend fun WebSocketServerSession.authWs() {
 
                     try {
                         handleAuthorization(code, deviceId, state, codeVerifier) { userInfoResponse ->
-                            sendSerialized(Intent.AuthSuccess(userInfoResponse))
+                            sendSerialized(Intent.AuthSuccess(Json.encodeToString(userInfoResponse.user)))
                             closeSession(scope)
                         }
                     } catch (e: Exception) {

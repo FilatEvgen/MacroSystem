@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Intent(private val type: String) {
     @Serializable
-    data class SendAuthUrl(private val url: String): Intent("send_auth_url")
+    data class SendAuthUrl(private val data: String): Intent("send_auth_url")
 
     @Serializable
-    data class AuthSuccess(private val user: UserInfoResponse): Intent("auth_success")
+    data class AuthSuccess(private val data: String): Intent("auth_success")
 
     @Serializable
-    data class AuthError(private val message: String): Intent("auth_error")
+    data class AuthError(private val data: String): Intent("auth_error")
 }
