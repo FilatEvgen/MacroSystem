@@ -1,13 +1,12 @@
 package org.example
 
-import ErrorResponse
 import UserInfoResponse
 import configFiles.AppConfig
 import configFiles.Config
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -19,6 +18,14 @@ import java.security.SecureRandom
 import java.util.*
 
 object AuthService {
+    private val client = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json(Json {
+                prettyPrint = true
+                ignoreUnknownKeys = true
+            })
+        }
+    }
     private val config: AppConfig = Config.appConfig // Загружаем конфигурацию
 
     fun generatePKCE(): Triple<String, String, String> {
@@ -52,12 +59,6 @@ object AuthService {
         deviceId: String,
         state: String
     ): TokenResponse {
-        val client = HttpClient(CIO) {
-            install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
-            }
-        }
-
         try {
             val response: HttpResponse = client.post("https://id.vk.com/oauth2/auth-") {
                 contentType(ContentType.Application.FormUrlEncoded)
@@ -70,12 +71,7 @@ object AuthService {
                 parameter("state", state)
             }
 
-            val responseBody = response.bodyAsText()
-            println("Response body: $responseBody")
-
-            // Десериализация ответа
-            val tokenResponse: TokenResponse = Json.decodeFromString(responseBody)
-            return tokenResponse
+            return response.body<TokenResponse>()
         } catch (e: ClientRequestException) {
             val errorBody = e.response.bodyAsText()
             println("Error during token exchange: $errorBody")
@@ -87,16 +83,10 @@ object AuthService {
     }
 
     suspend fun getUserInfo(accessToken: String): UserInfoResponse {
-        val client = HttpClient(CIO) {
-            install(ContentNegotiation) {
-                json()
-            }
-        }
-
         // Отправляем POST-запрос для получения информации о пользователе
         val response: UserInfoResponse = client.post("https://id.vk.com/oauth2/user_info") {
             contentType(ContentType.Application.FormUrlEncoded)
-            parameter("client_id", Config.appConfig.CLIENT_ID)
+            parameter("client_id", config.CLIENT_ID)
             parameter("access_token", accessToken)
         }.body()
 

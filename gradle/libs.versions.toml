@@ -13,6 +13,7 @@ io-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor
 io-ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 io-ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 io-ktor-server-sessions = { module = "io.ktor:ktor-server-sessions", version.ref = "ktor" }
+io-ktor-server-statusPages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
 # Ktor Client
 
 io-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -24,6 +25,7 @@ io-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-neg
 #ktor-common
 
 io-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+io-ktor-logger = { module = "ch.qos.logback:logback-classic", version.ref = "ktor" }
 
 #database
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposedVersion" }
