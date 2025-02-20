@@ -1,7 +1,7 @@
 [versions]
 
-kotlin = "2.0.21"
-ktor = "3.0.2"
+kotlin = "2.1.10"
+ktor = "3.1.0"
 exposedVersion = "0.57.0"
 postgresql = "42.7.4"
 shadowJar = "8.3.5"
@@ -19,6 +19,8 @@ io-ktor-server-statusPages = { module = "io.ktor:ktor-server-status-pages", vers
 
 io-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 io-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+io-ktor-client-apache = { module = "io.ktor:ktor-client-apache", version.ref = "ktor" }
+io-ktor-client-contentEncoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" }
 io-ktor-client-json = { module = "io.ktor:ktor-client-json", version.ref = "ktor" }
 io-ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
 io-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }

@@ -60,16 +60,19 @@ object AuthService {
         state: String
     ): TokenResponse {
         try {
-            val response: HttpResponse = client.post("https://id.vk.com/oauth2/auth-") {
+            val response: HttpResponse = client.post("https://id.vk.com/oauth2/auth") {
                 contentType(ContentType.Application.FormUrlEncoded)
-                parameter("grant_type", "authorization_code")
-                parameter("code", code)
-                parameter("code_verifier", codeVerifier)
-                parameter("redirect_uri", config.REDIRECT_URI)
-                parameter("client_id", config.CLIENT_ID)
-                parameter("device_id", deviceId)
-                parameter("state", state)
+                parameters {
+                    "grant_type" to "authorization_code"
+                    "code_verifier" to codeVerifier
+                    "redirect_uri" to config.REDIRECT_URI
+                    "code" to code
+                    "client_id" to config.CLIENT_ID
+                    "device_id" to deviceId
+                    "state" to state
+                }
             }
+            println(response.bodyAsText())
 
             return response.body<TokenResponse>()
         } catch (e: ClientRequestException) {

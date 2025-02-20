@@ -43,7 +43,7 @@ suspend fun WebSocketServerSession.authWs() {
 
                     try {
                         handleAuthorization(code, deviceId, state, codeVerifier) { userInfoResponse ->
-                            sendSerialized(Intent.AuthSuccess(Json.encodeToString(userInfoResponse.user)))
+                            sendSerialized(Intent.AuthSuccess(Json.encodeToString(userInfoResponse)))
                             closeSession(scope)
                         }
                     } catch (e: Exception) {

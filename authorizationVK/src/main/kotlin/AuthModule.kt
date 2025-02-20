@@ -6,6 +6,6 @@ import io.ktor.server.websocket.*
 fun Application.authModule() {
     routing {
         authRoutes()
-        webSocket("/ws/auth") { authWs() }
+        //webSocket("/ws/auth") { authWs() }
     }
 }
