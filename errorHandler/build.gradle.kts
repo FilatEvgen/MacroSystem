@@ -9,5 +9,7 @@ repositories {
 
 dependencies {
     implementation(libs.io.ktor.server.core)
+    implementation(libs.io.ktor.server.netty)
+    implementation(libs.io.ktor.server.statusPages)
     implementation(libs.io.ktor.serialization.kotlinx.json)
 }
