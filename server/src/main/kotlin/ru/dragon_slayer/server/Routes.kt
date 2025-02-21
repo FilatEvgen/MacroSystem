@@ -1,7 +1,6 @@
 package ru.dragon_slayer.server
 
 import Macro
-import auth_flow.authWs
 import deleteMacro
 import getAllMacrosForUser
 import getMacroById
@@ -11,11 +10,12 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
+import ru.dragon_slayer.authorization.configureAuthorizationRouting
 import updateMacro
 
 fun Application.macrosRouting() {
     routing {
+        configureAuthorizationRouting()
         // Получение всех макросов конкретного пользователя
         get("/macros/user/{userId}") {
             val userId = call.parameters["userId"]?.toIntOrNull() ?: return@get call.respond(

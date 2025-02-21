@@ -22,9 +22,8 @@ dependencies {
     implementation(libs.io.ktor.server.websockets)
     implementation(libs.io.ktor.server.statusPages)
     implementation(libs.exposed.core)
-
+    implementation(project(":authorizationModule"))
     implementation(project(":database"))
-    implementation(project(":authorizationVK"))
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
