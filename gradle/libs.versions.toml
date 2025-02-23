@@ -5,6 +5,7 @@ ktor = "3.1.0"
 exposedVersion = "0.57.0"
 postgresql = "42.7.4"
 shadowJar = "8.3.5"
+log4j = "2.24.3"
 
 [libraries]
 
@@ -35,6 +36,9 @@ exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "e
 exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposedVersion" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposedVersion" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+
+#Logging
+logging-log4j = { module = "org.apache.logging.log4j:log4j-bom", version.ref = "log4j" }
 
 [plugins]
 

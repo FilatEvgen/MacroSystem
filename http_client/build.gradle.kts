@@ -13,4 +13,5 @@ dependencies {
     implementation(libs.io.ktor.client.contentEncoding)
     implementation(libs.io.ktor.client.content.negotiation)
     implementation(libs.io.ktor.serialization.kotlinx.json)
+    implementation(libs.logging.log4j)
 }
