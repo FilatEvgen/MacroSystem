@@ -8,7 +8,6 @@ import io.ktor.server.routing.*
 import ru.dragon_slayer.error_handler.respondInvalidParameters
 import ru.dragon_slayer.error_handler.respondNotFound
 import ru.dragon_slayer.http.client.BodyBuilderUrlEncodedForm
-import java.security.InvalidParameterException
 
 suspend fun RoutingContext.handleGetUrl() {
     safeCall {
